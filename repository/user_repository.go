@@ -2,12 +2,13 @@ package repository
 
 import (
 	"encoding/json"
+	"starter-project/connector"
 	"starter-project/datasource"
 	"starter-project/model"
 )
 
 type userRepository struct {
-	source datasource.KeyValueDataSource
+	source connector.InMemoryKeyValue
 }
 
 type UserRepository interface {
@@ -15,7 +16,7 @@ type UserRepository interface {
 	Set(id string, user *model.User) error
 }
 
-func NewUserRepository(kv datasource.KeyValueDataSource) UserRepository {
+func NewUserRepository(kv connector.InMemoryKeyValue) UserRepository {
 	return &userRepository{kv}
 }
 

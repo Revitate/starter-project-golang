@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/swaggo/echo-swagger"
 	"log"
+	"starter-project/connector"
 	"starter-project/controller"
 	"starter-project/datasource"
 	"starter-project/repository"
@@ -75,7 +76,7 @@ func main() {
 }
 
 func binding(e *echo.Echo) {
-	mockDb := datasource.NewMockDataSource()
+	mockDb := connector.NewInMemoryKeyValue()
 
 	userRepo := repository.NewUserRepository(mockDb)
 	userController := controller.NewUserController(userRepo)
