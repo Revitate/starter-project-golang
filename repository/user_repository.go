@@ -3,7 +3,6 @@ package repository
 import (
 	"encoding/json"
 	"starter-project/connector"
-	"starter-project/datasource"
 	"starter-project/model"
 )
 

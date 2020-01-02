@@ -1,13 +1,13 @@
 package main
 
 import (
+	"context"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/swaggo/echo-swagger"
 	"log"
 	"starter-project/connector"
 	"starter-project/controller"
-	"starter-project/datasource"
 	"starter-project/repository"
 	"starter-project/router"
 
@@ -70,7 +70,7 @@ func main() {
 
 	binding(e)
 
-	if err := e.Start(":5000");err !=nil {
+	if err := e.Start(":5000"); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -78,6 +78,38 @@ func main() {
 func binding(e *echo.Echo) {
 	mockDb := connector.NewInMemoryKeyValue()
 
+	mongoConnectorOption := connector.MongoConnectorOption{
+		Database: "john",
+		URI:      "mongodb://john:john@localhost:27017/admin",
+	}
+	mongoDB, err := connector.NewMongoConnector(mongoConnectorOption)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx := context.Background()
+	err = mongoDB.Client().Ping(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sqlConnectorOption := connector.SqlConnectorOption{
+		DBName:   "postgres",
+		Type:     "postgres",
+		Host:     "localhost",
+		Port:     "5432",
+		User:     "john",
+		Password: "john",
+		SSLMode:  "disable",
+	}
+	sqlDb, err := connector.NewSqlConnector(sqlConnectorOption)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = sqlDb.DB().Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 	userRepo := repository.NewUserRepository(mockDb)
 	userController := controller.NewUserController(userRepo)
 	router.NewUserRouter(e, userController)
